@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.LinkedHashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.imageio.ImageIO;
@@ -137,17 +138,41 @@ public final class SpriteCache {
 				cache.add(archive);
 				
 			} else {
-				try {
-					BufferedImage image = ImageIO.read(file);
+				
+				if (file.getName().contains("_")) {
 					
-					SpriteBase sprite = SpriteBase.convert(image);
+					try { 
+						int parentId = Integer.parseInt(file.getName().substring(0, file.getName().indexOf("_")));
+						
+						ImageArchive archive = cache.contains(parentId) ? cache.search(parentId).get() : ImageArchive.create(parentId);
+						
+						int childId = Integer.parseInt(file.getName().substring(file.getName().indexOf("_") + 1, file.getName().indexOf(".")));
+						
+						SpriteBase sprite = SpriteBase.convert(ImageIO.read(file));
+						
+						sprite.setId(childId);
+						
+						archive.add(sprite);
+						
+						cache.add(archive);
+						
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
 					
-					sprite.setId(Integer.parseInt(file.getName().substring(0, file.getName().indexOf("."))));
-					
-					defaultArchive.add(sprite);
-				} catch (Exception ex) {
-					ex.printStackTrace();
-					continue;
+				} else {
+					try {
+						BufferedImage image = ImageIO.read(file);
+						
+						SpriteBase sprite = SpriteBase.convert(image);
+						
+						sprite.setId(Integer.parseInt(file.getName().substring(0, file.getName().indexOf("."))));
+						
+						defaultArchive.add(sprite);
+					} catch (Exception ex) {
+						ex.printStackTrace();
+						continue;
+					}
 				}
 			}
 
@@ -179,6 +204,10 @@ public final class SpriteCache {
 	
 	public boolean contains(int hash) {
 		return imageArchives.stream().anyMatch(it -> hash == it.getHash());
+	}
+	
+	public Optional<ImageArchive> search(int hash) {
+		return imageArchives.stream().filter(it -> it.getHash() == hash).findFirst();
 	}
 
 	public Set<ImageArchive> getImageArchives() {
