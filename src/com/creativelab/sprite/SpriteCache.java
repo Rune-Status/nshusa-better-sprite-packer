@@ -114,8 +114,16 @@ public final class SpriteCache {
 		cache.add(defaultArchive);
 		
 		for (File file : files) {
+			
 			if (file.isDirectory()) {
+				
 				ImageArchive archive = ImageArchive.create(file.getName());
+				
+				try {					
+					archive = ImageArchive.create(Integer.parseInt(file.getName()));					
+				} catch (Exception ex) {
+					
+				}
 				
 				File[] images = file.listFiles();
 
