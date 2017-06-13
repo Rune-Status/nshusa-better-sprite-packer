@@ -39,12 +39,18 @@ public class ImageArchive {
 		return sprites.add(sprite);
 	}
 	
-	public boolean remove(SpriteBase sprite) {
-		return sprites.remove(sprite);
+	public boolean remove(int id) {
+		Optional<SpriteBase> result = sprites.stream().filter(it -> it.getId() == id).findFirst();
+		
+		if (result.isPresent()) {
+			return sprites.remove(result.get());
+		}
+		
+		return false;
 	}
 	
-	public boolean contains(SpriteBase sprite) {
-		return sprites.contains(sprite);
+	public boolean contains(int id) {
+		return sprites.stream().anyMatch(it -> it.getId() == id);
 	}
 	
 	public Optional<SpriteBase> search(int id) {
