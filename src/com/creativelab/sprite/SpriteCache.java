@@ -19,7 +19,7 @@ import com.creativelab.util.SpritePackerUtils;
 
 public final class SpriteCache {
 	
-	private final Set<ImageArchive> imageArchives = new LinkedHashSet<>();
+	private final Set<ImageArchive> imageArchives = new LinkedHashSet<>(256);
 	
 	private static final int SIGNATURE_LENGTH = 3;
 	
@@ -187,11 +187,25 @@ public final class SpriteCache {
 	}
 	
 	public boolean create(String name) {
-		return imageArchives.add(ImageArchive.create(SpritePackerUtils.nameToHash(name)));		
+		return create(SpritePackerUtils.nameToHash(name));	
 	}
 	
 	public boolean add(ImageArchive imageArchive) {
 		return imageArchives.add(imageArchive);
+	}
+	
+	public boolean remove(int hash) {
+		Optional<ImageArchive> result = imageArchives.stream().filter(it -> hash == it.getHash()).findFirst();
+		
+		if (result.isPresent()) {
+			return imageArchives.remove(result.get());
+		}
+		
+		return false;
+	}
+	
+	public boolean remove(String name) {
+		return remove(SpritePackerUtils.nameToHash(name));
 	}
 	
 	public boolean remove(ImageArchive imageArchive) {
@@ -199,7 +213,7 @@ public final class SpriteCache {
 	}
 	
 	public boolean contains(String name) {
-		return imageArchives.stream().anyMatch(it -> SpritePackerUtils.nameToHash(name) == it.getHash());
+		return contains(SpritePackerUtils.nameToHash(name));
 	}
 	
 	public boolean contains(int hash) {
