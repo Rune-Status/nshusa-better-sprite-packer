@@ -5,7 +5,6 @@ import java.awt.image.DataBufferInt;
 import java.util.Objects;
 
 import com.creativelab.util.BufferedImageUtils;
-import com.creativelab.util.ColorQuantizer;
 
 public class SpriteBase {
 
@@ -28,7 +27,7 @@ public class SpriteBase {
 	}
 	
 	public static SpriteBase convert(BufferedImage source) {		
-			BufferedImage quantized = BufferedImageUtils.convert(ColorQuantizer.quantize(source), BufferedImage.TYPE_INT_ARGB);			
+			BufferedImage quantized = BufferedImageUtils.convert(source, BufferedImage.TYPE_INT_ARGB);			
 			
 			final int[] pixels = ((DataBufferInt) quantized.getRaster().getDataBuffer()).getData();
 			

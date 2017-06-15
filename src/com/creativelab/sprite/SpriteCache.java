@@ -1,6 +1,6 @@
 package com.creativelab.sprite;
 
-import java.awt.image.BufferedImage;
+import java.awt.Color;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -14,6 +14,8 @@ import java.util.Set;
 
 import javax.imageio.ImageIO;
 
+import com.creativelab.util.BufferedImageUtils;
+import com.creativelab.util.ColorQuantizer;
 import com.creativelab.util.CompressionUtils;
 import com.creativelab.util.SpritePackerUtils;
 
@@ -91,7 +93,7 @@ public final class SpriteCache {
 				dis.readFully(compressed);
 				
 				CompressionUtils.degzip(compressed, uncompressed);
-				
+
 				cache.add(ImageArchive.decode(uncompressed));
 			}
 			
@@ -99,7 +101,7 @@ public final class SpriteCache {
 		}
 	}
 	
-	public static SpriteCache load(File directory) throws IOException {		
+	public static SpriteCache load(Color transparent, File directory) throws IOException {		
 		
 		if (!directory.isDirectory()) {
 			throw new IOException("This file is not a directory.");
@@ -130,9 +132,7 @@ public final class SpriteCache {
 				for (File fimage : images) {
 					try {
 						
-						BufferedImage img = ImageIO.read(fimage);
-						
-						SpriteBase sprite = SpriteBase.convert(img);
+						SpriteBase sprite = SpriteBase.convert(BufferedImageUtils.makeColorTransparent(ColorQuantizer.quantize(ImageIO.read(fimage)), transparent));
 						
 						sprite.setId(Integer.parseInt(fimage.getName().substring(0, fimage.getName().indexOf("."))));
 						
@@ -156,7 +156,7 @@ public final class SpriteCache {
 						
 						int childId = Integer.parseInt(file.getName().substring(file.getName().indexOf("_") + 1, file.getName().indexOf(".")));
 						
-						SpriteBase sprite = SpriteBase.convert(ImageIO.read(file));
+						SpriteBase sprite = SpriteBase.convert(BufferedImageUtils.makeColorTransparent(ColorQuantizer.quantize(ImageIO.read(file)), transparent));
 						
 						sprite.setId(childId);
 						
@@ -170,9 +170,8 @@ public final class SpriteCache {
 					
 				} else {
 					try {
-						BufferedImage image = ImageIO.read(file);
 						
-						SpriteBase sprite = SpriteBase.convert(image);
+						SpriteBase sprite = SpriteBase.convert(BufferedImageUtils.makeColorTransparent(ColorQuantizer.quantize(ImageIO.read(file)), transparent));
 						
 						sprite.setId(Integer.parseInt(file.getName().substring(0, file.getName().indexOf("."))));
 						
