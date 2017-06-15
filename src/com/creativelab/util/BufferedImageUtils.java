@@ -39,6 +39,16 @@ public class BufferedImageUtils {
     	return imageToBufferedImage(Toolkit.getDefaultToolkit().createImage(new FilteredImageSource(im.getSource(), filter)));
     }
     
+    public static BufferedImage createColoredBackground(BufferedImage image, java.awt.Color color) {
+    	BufferedImage copy = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
+    	Graphics2D g2d = copy.createGraphics();
+    	g2d.setColor(color);
+    	g2d.fillRect(0, 0, copy.getWidth(), copy.getHeight());
+    	g2d.drawImage(image, 0, 0, null);
+    	g2d.dispose();    	
+    	return copy;
+    }
+    
     public static BufferedImage imageToBufferedImage(Image img)
     {
         if (img instanceof BufferedImage)

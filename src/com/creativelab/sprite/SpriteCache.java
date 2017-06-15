@@ -215,10 +215,6 @@ public final class SpriteCache {
 		return remove(SpritePackerUtils.nameToHash(name));
 	}
 	
-	public boolean remove(ImageArchive imageArchive) {
-		return imageArchives.remove(imageArchive);
-	}
-	
 	public boolean contains(String name) {
 		return contains(SpritePackerUtils.nameToHash(name));
 	}
@@ -227,8 +223,24 @@ public final class SpriteCache {
 		return imageArchives.stream().anyMatch(it -> hash == it.getHash());
 	}
 	
+	public Optional<ImageArchive> search(String name) {
+		return search(SpritePackerUtils.nameToHash(name));
+	}
+	
 	public Optional<ImageArchive> search(int hash) {
 		return imageArchives.stream().filter(it -> it.getHash() == hash).findFirst();
+	}
+	
+	public Optional<SpriteBase> search(String name, int id) {
+		Optional<ImageArchive> result = search(name);
+		
+		if (!result.isPresent()) {
+			return Optional.empty();
+		}
+		
+		ImageArchive archive = result.get();
+		
+		return archive.getSprites().stream().filter(it -> it.getId() == id).findFirst();
 	}
 
 	public Set<ImageArchive> getImageArchives() {
